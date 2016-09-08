@@ -8,6 +8,7 @@ import libsonic
 import time
 import re
 import itertools
+import urllib
 
 from mopidy.models import Track, Album, Artist, Playlist
 
@@ -430,9 +431,9 @@ class SubsonicRemoteClient(object):
                           self.api._port,
                           self.api._serverPath,
                           'stream.view',
-                          id,
-                          self.api._username,
-                          self.api._rawPass)
+                          urllib.quote_plus(id),
+                          urllib.quote_plus(self.api._username),
+                          urllib.quote_plus(self.api._rawPass))
         return uri
 
     def search_artist(self, artist):
