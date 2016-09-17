@@ -520,7 +520,7 @@ class SubsonicRemoteClient(object):
             return [Playlist(uri=u'subsonic://%s' % p.get('id'),
                     name='User Playlist: %s' %
                     self.fix_playlist_name(p.get('name')))
-                    for p in results]
+                    for p in results if p is not None]
 
     def playlist_id_to_playlist(self, id):
         pl = unescapeobj(self.api.getPlaylist(id).get('playlist'))
