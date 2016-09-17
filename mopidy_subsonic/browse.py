@@ -10,8 +10,6 @@ ROOT_DIR = models.Ref.directory(
 _ROOT_DIR_CONTENTS = [
     models.Ref.directory(
         uri='subsonic:artists', name='Artists'),
-    models.Ref.directory(
-        uri='subsonic:debug', name='debug'),
 ]
 
 

@@ -335,7 +335,7 @@ class SubsonicRemoteClient(object):
         return al
 
     def _make_track(self, data):
-        uri = 'subsonic://%s' % data['id']
+        uri = 'subsonic:song:%s' % data['id']
         name = data.get('title', '')
         # keeping with the convention of returning lower none if not present
         date = str(data.get('year')).lower()
@@ -419,7 +419,7 @@ class SubsonicRemoteClient(object):
         track_kwargs['length'] = int(data.get('duration', 0)) * 1000
         track_kwargs['bitrate'] = data.get('bitRate', 0)
 
-        track_kwargs['uri'] = 'subsonic://%s' % data['id']
+        track_kwargs['uri'] = 'subsonic:song:%s' % data['id']
 
         track = Track(**track_kwargs)
 
@@ -517,17 +517,15 @@ class SubsonicRemoteClient(object):
         else:
             pl = self.api.getPlaylists().get('playlists').get('playlist')
             results = makelist(unescapeobj(pl))
-            return [Playlist(uri=u'subsonic://%s' % p.get('id'),
-                    name='User Playlist: %s' %
-                    self.fix_playlist_name(p.get('name')))
+            return [Playlist(uri=u'subsonic:playlist:%s' % p.get('id'),
+                    name=self.fix_playlist_name(p.get('name')))
                     for p in results if p is not None]
 
     def playlist_id_to_playlist(self, id):
         pl = unescapeobj(self.api.getPlaylist(id).get('playlist'))
         songs = pl.get('entry')
-        return Playlist(uri=u'subsonic://%s' % pl.get('id'),
-                        name='User Playlist: %s' %
-                        self.fix_playlist_name(pl.get('name')),
+        return Playlist(uri=u'subsonic:playlist:%s' % pl.get('id'),
+                        name=self.fix_playlist_name(pl.get('name')),
                         tracks=[self.get_track(song) for song in
                                 makelist(songs)])
 
@@ -538,22 +536,10 @@ class SubsonicRemoteClient(object):
             albums = makelist(unescapeobj(al))
             for album in albums:
                 tracks.extend(self.album_to_tracks(album))
-            return Playlist(uri=u'subsonic://%s' % type,
+            return Playlist(uri=u'subsonic:playlist:%s' % type,
                             name=type,
                             tracks=tracks)
         except:
-            return Playlist(uri=u'subsonic://%s' % type,
+            return Playlist(uri=u'subsonic:playlist:%s' % type,
                             name=type,
-                            tracks=[])
-
-    def generate_random_playlist(self):
-        try:
-            rdm = self.api.getRandomSongs(100).get('randomSongs').get('song')
-            songs = makelist(unescapeobj(rdm))
-            return Playlist(uri=u'subsonic://randomsongs',
-                            name='randomsongs',
-                            tracks=[self.get_track(song) for song in songs])
-        except:
-            return Playlist(uri=u'subsonic://randomsongs',
-                            name='randomsongs',
                             tracks=[])
